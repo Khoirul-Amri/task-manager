@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Task Manager untuk mengatur tugas secara terstruktur."
+    />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/dark-mode.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1769aa" />
+    <title>Task Manager</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="app-brand" href="/" aria-label="Task Manager">Task Manager</a>
+      <div class="header-actions">
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Aktifkan dark mode">
+          Dark mode
+        </button>
+        <button type="button" class="menu-toggle" aria-label="Buka menu navigasi" aria-expanded="false">
+          Menu
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="app-sidebar" aria-label="Navigasi dan filter tugas">
+        <nav aria-label="Navigasi utama">
+          <h2>Workspace</h2>
+          <ul>
+            <li><a href="#all-tasks">Semua tugas</a></li>
+            <li><a href="#today">Hari ini</a></li>
+            <li><a href="#completed">Selesai</a></li>
+          </ul>
+        </nav>
+
+        <section aria-labelledby="categories-heading">
+          <h2 id="categories-heading">Kategori</h2>
+          <p>Belum ada kategori.</p>
+        </section>
+
+        <section aria-labelledby="saved-filters-heading">
+          <h2 id="saved-filters-heading">Filter tersimpan</h2>
+          <button type="button" class="button-secondary sidebar-action" id="save-filter-button">
+            Simpan filter aktif
+          </button>
+          <ul id="saved-filters-list" class="saved-filters-list"></ul>
+        </section>
+      </aside>
+
+      <main class="app-main" id="all-tasks">
+        <section class="page-heading" aria-labelledby="page-title">
+          <p>Overview</p>
+          <h1 id="page-title">Semua tugas</h1>
+          <p>Atur pekerjaanmu dengan lebih terarah.</p>
+        </section>
+
+        <section class="overall-progress" aria-labelledby="overall-progress-heading">
+          <div class="progress-heading">
+            <h2 id="overall-progress-heading">Progress keseluruhan</h2>
+            <span id="overall-progress-label">0%</span>
+          </div>
+          <progress id="overall-progress" value="0" max="100">0%</progress>
+        </section>
+
+        <section class="stats-grid" aria-label="Statistik tugas">
+          <article class="stat-card">
+            <span>Total tugas</span>
+            <strong id="total-task-stat">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Selesai hari ini</span>
+            <strong id="completed-today-stat">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Overdue</span>
+            <strong id="overdue-stat">0</strong>
+          </article>
+          <article class="stat-card stat-card--wide">
+            <span>Per kategori</span>
+            <div id="category-stats">Belum ada data.</div>
+          </article>
+        </section>
+
+        <section class="pomodoro-panel" aria-labelledby="pomodoro-heading">
+          <div class="pomodoro-panel__header">
+            <h2 id="pomodoro-heading">Pomodoro</h2>
+            <span id="pomodoro-status" aria-live="polite">Siap fokus</span>
+          </div>
+          <div class="pomodoro-controls">
+            <label for="pomodoro-task">Task terkait
+              <select id="pomodoro-task"><option value="">Tanpa task</option></select>
+            </label>
+            <label for="pomodoro-mode">Mode
+              <select id="pomodoro-mode">
+                <option value="work">Kerja</option>
+                <option value="break">Istirahat</option>
+              </select>
+            </label>
+          </div>
+          <output class="pomodoro-time" id="pomodoro-time" aria-live="polite">25:00</output>
+          <div class="pomodoro-actions">
+            <button type="button" id="pomodoro-start">Mulai</button>
+            <button type="button" class="button-secondary" id="pomodoro-reset">Reset</button>
+          </div>
+        </section>
+
+        <section class="notification-panel" aria-labelledby="notification-heading">
+          <div>
+            <h2 id="notification-heading">Reminder deadline</h2>
+            <p id="notification-status" aria-live="polite">Notifikasi belum diaktifkan.</p>
+            <p>Auto-start Pomodoro &amp; reminder hanya aktif selama browser terbuka.</p>
+          </div>
+          <button type="button" class="button-secondary" id="notification-button">Aktifkan reminder</button>
+        </section>
+
+        <section class="schedule-settings" aria-labelledby="schedule-settings-heading">
+          <h2 id="schedule-settings-heading">Pengaturan jadwal</h2>
+          <label class="inline-check"><input id="auto-schedule-setting" type="checkbox" checked /> Aktifkan blok waktu &amp; auto-start Pomodoro</label>
+          <label for="default-block-duration">Durasi blok default
+            <input id="default-block-duration" type="number" min="15" step="15" value="30" /> menit
+          </label>
+        </section>
+
+        <section class="task-toolbar" aria-label="Kontrol tugas">
+          <label for="quick-add-input" class="quick-add-field">Quick-add
+            <input id="quick-add-input" type="text" placeholder="Meeting besok jam 2 siang #kerja !tinggi" />
+          </label>
+          <button type="button" id="quick-add-button">Tambah cepat</button>
+          <label for="task-search">Cari tugas</label>
+          <input id="task-search" type="search" placeholder="Cari tugas..." />
+          <label for="status-filter">
+            Status
+            <select id="status-filter">
+              <option value="all">Semua</option>
+              <option value="active">Aktif</option>
+              <option value="completed">Selesai</option>
+              <option value="archived">Diarsipkan</option>
+            </select>
+          </label>
+          <label for="priority-filter">
+            Prioritas
+            <select id="priority-filter">
+              <option value="all">Semua</option>
+              <option value="low">Rendah</option>
+              <option value="medium">Sedang</option>
+              <option value="high">Tinggi</option>
+            </select>
+          </label>
+          <label for="category-filter">
+            Kategori
+            <select id="category-filter">
+              <option value="all">Semua</option>
+            </select>
+          </label>
+          <label for="tag-filter">
+            Tag
+            <select id="tag-filter" multiple size="3" aria-label="Filter tag"></select>
+          </label>
+          <label for="sort-select">
+            Urutkan
+            <select id="sort-select">
+              <option value="order">Urutan manual</option>
+              <option value="created-desc">Terbaru dibuat</option>
+              <option value="created-asc">Terlama dibuat</option>
+              <option value="due-asc">Deadline terdekat</option>
+              <option value="priority-desc">Prioritas tertinggi</option>
+              <option value="title-asc">Alfabetis A-Z</option>
+              <option value="title-desc">Alfabetis Z-A</option>
+            </select>
+          </label>
+          <button type="button" id="add-task-button">Tambah tugas</button>
+          <button type="button" class="button-secondary" id="export-button">Export JSON</button>
+          <button type="button" class="button-secondary" id="import-button">Import JSON</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </section>
+
+        <div class="view-toggle" role="group" aria-label="Pilih tampilan task">
+          <button type="button" class="button-secondary is-selected" id="list-view-button">List view</button>
+          <button type="button" class="button-secondary" id="board-view-button">Board view</button>
+          <button type="button" class="button-secondary" id="calendar-view-button">Calendar view</button>
+          <button type="button" class="button-secondary" id="matrix-view-button">Matrix view</button>
+        </div>
+
+        <section class="timeline-section" aria-labelledby="timeline-heading">
+          <h2 id="timeline-heading">Timeline</h2>
+          <div id="timeline-view" aria-live="polite"></div>
+        </section>
+
+        <section class="task-list-section" aria-labelledby="task-list-heading">
+          <h2 id="task-list-heading">Daftar tugas</h2>
+          <div class="task-list" aria-live="polite">
+            <p>Belum ada tugas.</p>
+          </div>
+        </section>
+
+        <section class="board-view" id="board-view" aria-labelledby="board-heading" hidden>
+          <h2 id="board-heading">Board tugas</h2>
+          <div class="board-grid" id="board-grid" aria-live="polite"></div>
+        </section>
+
+        <section class="calendar-view" id="calendar-view" aria-labelledby="calendar-heading" hidden>
+          <h2 id="calendar-heading">Calendar tugas</h2>
+          <div class="calendar-mode-toggle" role="group" aria-label="Mode kalender">
+            <button type="button" class="button-secondary is-selected" id="month-calendar-button">Month</button>
+            <button type="button" class="button-secondary" id="week-calendar-button">Week</button>
+          </div>
+          <div id="calendar-grid-view" aria-live="polite"></div>
+        </section>
+
+        <section class="matrix-view" id="matrix-view" aria-labelledby="matrix-heading" hidden>
+          <h2 id="matrix-heading">Eisenhower Matrix</h2>
+          <p class="matrix-help">Urgent dihitung dari deadline maksimal besok. Important berasal dari prioritas sedang atau tinggi.</p>
+          <div class="matrix-grid" id="matrix-grid" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="task-dialog" id="task-dialog" aria-labelledby="dialog-title">
+      <form class="task-form" id="task-form">
+        <div class="task-dialog__header">
+          <h2 id="dialog-title">Tambah tugas</h2>
+          <button type="button" class="dialog-close" id="dialog-close" aria-label="Tutup form">
+            &times;
+          </button>
+        </div>
+
+        <label for="task-title">Judul tugas</label>
+        <input id="task-title" name="title" type="text" maxlength="100" required />
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+
+        <label for="task-description">Deskripsi</label>
+        <textarea id="task-description" name="description" rows="4" maxlength="500"></textarea>
+
+        <label for="task-priority">Prioritas</label>
+        <select id="task-priority" name="priority">
+          <option value="low">Rendah</option>
+          <option value="medium" selected>Sedang</option>
+          <option value="high">Tinggi</option>
+        </select>
+
+        <label for="task-due-date">Deadline</label>
+        <input id="task-due-date" name="dueDate" type="date" />
+
+        <label for="task-due-time">Jam mulai</label>
+        <input id="task-due-time" name="dueTime" type="time" />
+
+        <label for="task-duration">Durasi blok waktu</label>
+        <select id="task-duration" name="durationMin">
+          <option value="">Task biasa</option>
+          <option value="15">15 menit</option>
+          <option value="30">30 menit</option>
+          <option value="45">45 menit</option>
+          <option value="60">60 menit</option>
+          <option value="90">90 menit</option>
+        </select>
+        <label class="inline-check"><input id="task-auto-pomodoro" type="checkbox" checked /> Auto-start Pomodoro</label>
+
+        <label for="task-recurrence">Pengulangan</label>
+        <select id="task-recurrence" name="recurrenceType">
+          <option value="none">Tidak berulang</option>
+          <option value="daily">Setiap hari</option>
+          <option value="weekly">Setiap minggu</option>
+          <option value="monthly">Setiap bulan</option>
+          <option value="custom">Custom</option>
+        </select>
+
+        <div class="recurrence-options" id="recurrence-options" hidden>
+          <label for="recurrence-interval">Setiap</label>
+          <input id="recurrence-interval" type="number" min="1" max="365" value="1" />
+          <select id="recurrence-unit">
+            <option value="days">hari</option>
+            <option value="weeks">minggu</option>
+          </select>
+          <fieldset id="weekly-days" hidden>
+            <legend>Hari dalam minggu</legend>
+            <label><input type="checkbox" value="1" /> Sen</label>
+            <label><input type="checkbox" value="2" /> Sel</label>
+            <label><input type="checkbox" value="3" /> Rab</label>
+            <label><input type="checkbox" value="4" /> Kam</label>
+            <label><input type="checkbox" value="5" /> Jum</label>
+            <label><input type="checkbox" value="6" /> Sab</label>
+            <label><input type="checkbox" value="0" /> Min</label>
+          </fieldset>
+        </div>
+
+        <label for="task-category">Kategori</label>
+        <input id="task-category" name="category" type="text" list="category-options" maxlength="40" placeholder="Contoh: Kerja" />
+        <datalist id="category-options"></datalist>
+
+        <label for="task-tags">Tag</label>
+        <input id="task-tags" name="tags" type="text" maxlength="200" placeholder="Contoh: urgent, client, sprint" />
+        <small>Gunakan koma untuk memisahkan beberapa tag.</small>
+
+        <label for="task-dependencies">Bergantung pada</label>
+        <select id="task-dependencies" multiple size="4" aria-describedby="dependency-help"></select>
+        <small id="dependency-help">Pilih task yang harus selesai lebih dulu.</small>
+
+        <div class="task-form__actions">
+          <button type="button" class="button-secondary" id="dialog-cancel">Batal</button>
+          <button type="submit">Simpan tugas</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="quick-capture-dialog" id="quick-capture-dialog" aria-labelledby="quick-capture-heading">
+      <form id="quick-capture-form" class="quick-capture-form">
+        <h2 id="quick-capture-heading">Quick capture</h2>
+        <label for="quick-capture-input">Task baru</label>
+        <input id="quick-capture-input" type="text" placeholder="Meeting besok #kerja !tinggi" autocomplete="off" />
+        <div class="task-form__actions">
+          <button type="button" class="button-secondary" id="quick-capture-cancel">Batal</button>
+          <button type="submit">Tambah task</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+      <span id="toast-message"></span>
+      <button type="button" class="toast__undo" id="toast-undo">Undo</button>
+    </div>
+
+    <footer class="app-footer">
+      <p>&copy; 2026 Task Manager</p>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
