@@ -1,0 +1,40 @@
+:root[data-theme="dark"] {
+	color-scheme: dark;
+
+	--color-surface: #1d242c;
+	--color-surface-muted: #121820;
+	--color-border: #3c4854;
+	--color-text: #edf2f7;
+	--color-text-muted: #b5c0cb;
+	--color-accent: #5aa9e6;
+	--color-accent-strong: #89c4f0;
+	--shadow-subtle: 0 1px 3px rgb(0 0 0 / 35%);
+}
+
+:root[data-theme="dark"] body {
+	background: #0f1419;
+}
+
+:root[data-theme="dark"] .priority-badge--low {
+	background: #1e4730;
+	color: #a8e6ba;
+}
+
+:root[data-theme="dark"] .priority-badge--medium {
+	background: #5a4616;
+	color: #ffe29a;
+}
+
+:root[data-theme="dark"] .priority-badge--high {
+	background: #5a2828;
+	color: #ffb3b3;
+}
+
+:root[data-theme="dark"] .task-card__deadline.is-overdue,
+:root[data-theme="dark"] .form-error {
+	color: #ffb3b3;
+}
+
+:root[data-theme="dark"] .task-card__deadline.is-due-soon {
+	color: #ffe29a;
+}
